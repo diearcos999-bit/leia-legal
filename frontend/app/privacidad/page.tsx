@@ -219,7 +219,7 @@ export default function PrivacidadPage() {
                       <li key={idx} className="flex items-start gap-3 text-slate-600">
                         <ChevronRight className="h-5 w-5 text-pacific-500 flex-shrink-0 mt-0.5" />
                         <span>
-                          {item.bold && <strong className="text-slate-800">{item.bold} </strong>}
+                          {'bold' in item && item.bold && <strong className="text-slate-800">{item.bold} </strong>}
                           {item.text}
                         </span>
                       </li>
