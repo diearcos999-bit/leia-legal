@@ -359,7 +359,7 @@ Responde SOLO en formato JSON con esta estructura:
 Sé preciso y solo incluye información que esté explícitamente en la conversación."""
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-3-haiku-20240307",
         max_tokens=1024,
         messages=[{"role": "user", "content": summary_prompt}]
     )

@@ -628,7 +628,7 @@ INSTRUCCIONES ESPECIALES RAG:
 
         # Llamar a Claude API
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-3-haiku-20240307",
             max_tokens=1024,
             system=enhanced_system_prompt,
             messages=messages

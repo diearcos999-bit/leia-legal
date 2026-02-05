@@ -245,7 +245,7 @@ Especialidades sugeridas: {', '.join(triage_result.suggested_specialties)}
     # 7. Llamar a Claude
     try:
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-3-haiku-20240307",
             max_tokens=1500,
             system=system_prompt,
             messages=messages
@@ -486,7 +486,7 @@ async def create_case_from_chat(
     summary_prompt = build_case_summary_prompt(conversation_text)
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-3-haiku-20240307",
         max_tokens=1024,
         messages=[{"role": "user", "content": summary_prompt}]
     )

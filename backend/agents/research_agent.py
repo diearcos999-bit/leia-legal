@@ -35,7 +35,7 @@ class ResearchAgent(BaseAgent):
 
     def __init__(
         self,
-        model: str = "claude-sonnet-4-20250514",
+        model: str = "claude-3-haiku-20240307",
         temperature: float = 0.3,
         max_tokens: int = 4096,
     ):
