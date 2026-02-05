@@ -18,7 +18,7 @@ email-validator==2.1.0
 slowapi==0.1.9
 
 # Web Scraping (PJUD)
-playwright==1.57.0
+playwright==1.58.0
 
 # AI Agents (LangGraph + LangChain)
 langgraph>=0.2.0
