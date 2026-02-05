@@ -1,0 +1,112 @@
+EN LO PRINCIPAL: Demanda en Procedimiento de Aplicación General;
+PRIMER OTROSÍ: Acompaña documentos;
+SEGUNDO OTROSÍ: Patrocinio y poder.
+
+{{ tribunal }}
+
+{{ demandante_nombre }}, {{ demandante_nacionalidad | default('chileno(a)') }}, {{ demandante_profesion | default('trabajador(a)') }}, RUT {{ demandante_rut }}, domiciliado(a) en {{ demandante_direccion }}, a US. respetuosamente digo:
+
+Que vengo en interponer demanda en Procedimiento de Aplicación General en contra de {{ demandado_nombre }}, RUT {{ demandado_rut }}, representada legalmente por {{ demandado_representante | default('quien corresponda') }}, ambos con domicilio en {{ demandado_direccion }}, en base a los siguientes fundamentos de hecho y de derecho que paso a exponer:
+
+I. LOS HECHOS
+
+1. RELACIÓN LABORAL
+
+Con fecha {{ fecha_ingreso | format_date }}, ingresé a prestar servicios para la demandada, desempeñándome en el cargo de {{ cargo | default('trabajador(a)') }}, con una jornada de trabajo de {{ jornada | default('45 horas semanales') }}, percibiendo una remuneración mensual de {{ ultimo_sueldo }}.
+
+2. DESARROLLO DE LA RELACIÓN LABORAL
+
+{{ hechos }}
+
+3. TÉRMINO DE LA RELACIÓN LABORAL
+
+Con fecha {{ fecha_despido | format_date }}, la demandada puso término a mi contrato de trabajo invocando la causal de {{ causal_invocada | default('necesidades de la empresa') }}, establecida en el artículo {{ articulo_invocado | default('161') }} del Código del Trabajo.
+
+{% if despido_injustificado %}
+4. CARÁCTER INJUSTIFICADO DEL DESPIDO
+
+El despido de que fui objeto carece de justificación legal suficiente, toda vez que:
+
+{{ argumentos_injustificacion | default('No se configuran los supuestos fácticos de la causal invocada.') }}
+{% endif %}
+
+II. EL DERECHO
+
+Conforme a lo dispuesto en los artículos 159 y siguientes del Código del Trabajo, el empleador sólo puede poner término al contrato de trabajo invocando alguna de las causales expresamente establecidas en la ley, debiendo acreditar los hechos que la configuran.
+
+{% if despido_injustificado %}
+En el caso de autos, la demandada no ha logrado acreditar la causal invocada, por lo que el despido debe ser declarado injustificado, con las consecuencias legales que ello conlleva.
+
+De conformidad con el artículo 168 del Código del Trabajo, si el tribunal estableciere que la aplicación de una o más de las causales de terminación establecidas en los artículos 159 y 160 no ha sido acreditada, corresponderá el pago de las indemnizaciones por término de contrato incrementadas en los porcentajes establecidos en la ley.
+{% endif %}
+
+III. PRESTACIONES QUE SE DEMANDAN
+
+En virtud de lo expuesto, vengo en solicitar se condene a la demandada al pago de las siguientes prestaciones:
+
+{{ pretensiones }}
+
+{% if indemnizacion_anos_servicio %}
+1. INDEMNIZACIÓN POR AÑOS DE SERVICIO:
+   - Años de servicio: {{ anos_servicio | default(0) }}
+   - Base de cálculo: {{ ultimo_sueldo }}
+   - Monto: {{ monto_indemnizacion_anos | default('Lo que determine el tribunal') }}
+{% endif %}
+
+{% if indemnizacion_aviso_previo %}
+2. INDEMNIZACIÓN SUSTITUTIVA DEL AVISO PREVIO:
+   - Monto: {{ monto_aviso_previo | default('Un mes de remuneración') }}
+{% endif %}
+
+{% if recargo_legal %}
+3. RECARGO LEGAL (Art. 168 CT):
+   - Porcentaje: {{ porcentaje_recargo | default('30%, 50% o 80%') }}
+{% endif %}
+
+{% if feriado_proporcional %}
+4. FERIADO LEGAL Y/O PROPORCIONAL:
+   - Días: {{ dias_feriado | default('Lo que se acredite') }}
+   - Monto: {{ monto_feriado | default('Lo que determine el tribunal') }}
+{% endif %}
+
+{% if otras_prestaciones %}
+5. OTRAS PRESTACIONES:
+{{ otras_prestaciones }}
+{% endif %}
+
+Se solicita además:
+- Reajustes e intereses conforme al artículo 173 del Código del Trabajo
+- Costas de la causa
+
+POR TANTO,
+En mérito de lo expuesto y de conformidad con lo dispuesto en los artículos 159 y siguientes, 168, 173 y demás normas pertinentes del Código del Trabajo,
+
+RUEGO A US.:
+Tener por interpuesta demanda en Procedimiento de Aplicación General en contra de {{ demandado_nombre }}, ya individualizada, acogerla en todas sus partes, y en definitiva declarar:
+
+1. Que el despido de que fui objeto es {{ tipo_despido | default('injustificado') }}.
+2. Que se condene a la demandada al pago de las prestaciones señaladas precedentemente.
+3. Que se condene a la demandada al pago de los reajustes e intereses legales.
+4. Que se condene a la demandada al pago de las costas de la causa.
+
+PRIMER OTROSÍ: Sírvase US. tener por acompañados los siguientes documentos:
+
+{% if documentos_adjuntos %}
+{% for doc in documentos_adjuntos %}
+{{ loop.index }}. {{ doc }}
+{% endfor %}
+{% else %}
+1. Copia de contrato de trabajo
+2. Copia de liquidaciones de sueldo
+3. Carta de despido
+4. Copia de cédula de identidad
+{% endif %}
+
+SEGUNDO OTROSÍ: Sírvase US. tener presente que me patrocinará en estos autos el abogado {{ abogado_patrocinante | default('don(a) ________________') }}, RUT {{ abogado_rut | default('________________') }}, a quien confiero patrocinio y poder, con todas las facultades del artículo 7° inciso 2° del Código de Procedimiento Civil, las que doy expresamente por reproducidas, especialmente las de desistirse en primera instancia de la acción deducida, aceptar la demanda contraria, absolver posiciones, renunciar a los recursos o a los términos legales, transigir, comprometer, otorgar a los árbitros facultades de arbitradores, aprobar convenios y percibir.
+
+
+_________________________
+{{ demandante_nombre }}
+RUT: {{ demandante_rut }}
+
+{{ ciudad | default('Santiago') }}, {{ fecha_documento | format_date }}

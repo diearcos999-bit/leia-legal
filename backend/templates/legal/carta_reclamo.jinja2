@@ -1,0 +1,94 @@
+CARTA DE RECLAMO FORMAL
+
+{{ ciudad | default('Santiago') }}, {{ fecha_documento | format_date }}
+
+Señores
+{{ destinatario_nombre }}
+{{ destinatario_direccion }}
+Presente
+
+REF: RECLAMO FORMAL - {{ referencia | default('Incumplimiento de servicio/producto') }}
+
+De mi consideración:
+
+Por medio de la presente, yo, {{ remitente_nombre }}, RUT {{ remitente_rut }}, domiciliado(a) en {{ remitente_direccion }}, vengo en interponer RECLAMO FORMAL en contra de su empresa/institución, por los hechos que a continuación expongo:
+
+I. ANTECEDENTES
+
+{% if numero_boleta %}
+- Número de boleta/factura: {{ numero_boleta }}
+{% endif %}
+{% if numero_orden %}
+- Número de orden/pedido: {{ numero_orden }}
+{% endif %}
+- Fecha de compra/contratación: {{ fecha_compra | format_date }}
+{% if monto_pagado %}
+- Monto pagado: {{ monto_pagado }}
+{% endif %}
+- Producto/Servicio: {{ producto_servicio | default('') }}
+
+II. DESCRIPCIÓN DEL PROBLEMA
+
+{{ descripcion_problema }}
+
+III. FUNDAMENTOS LEGALES
+
+De conformidad con la Ley N° 19.496 sobre Protección de los Derechos de los Consumidores, tengo derecho a:
+
+{% if tipo_reclamo == 'producto_defectuoso' %}
+a) La reparación gratuita del bien (Artículo 20 letra c)
+b) La reposición del producto (Artículo 20 letra c)
+c) La devolución del precio pagado (Artículo 20 letra c)
+{% elif tipo_reclamo == 'servicio_deficiente' %}
+a) Que se preste nuevamente el servicio sin costo adicional
+b) La devolución de lo pagado por el servicio
+{% elif tipo_reclamo == 'publicidad_enganosa' %}
+a) Que se cumpla lo ofrecido en la publicidad
+b) La devolución del precio pagado
+c) Indemnización de perjuicios
+{% else %}
+a) La devolución de lo pagado
+b) Que se cumpla lo prometido
+c) Una indemnización por los perjuicios sufridos
+{% endif %}
+
+IV. PETICIÓN CONCRETA
+
+Solicito formalmente que:
+
+{{ solucion_solicitada }}
+
+V. PLAZO PARA RESPUESTA
+
+Le otorgo un plazo de {{ plazo_respuesta | default('10 días hábiles') }} para dar solución a mi reclamo, contados desde la recepción de esta carta.
+
+VI. RESERVA DE ACCIONES
+
+Me reservo el derecho de:
+1. Acudir al Servicio Nacional del Consumidor (SERNAC) para interponer reclamo formal.
+2. Iniciar las acciones judiciales correspondientes ante el Juzgado de Policía Local.
+3. Solicitar las indemnizaciones por daños y perjuicios que correspondan.
+
+VII. DATOS DE CONTACTO
+
+Para los efectos de la presente reclamación, fijo como datos de contacto:
+- Dirección: {{ remitente_direccion }}
+- Teléfono: {{ remitente_telefono | default('') }}
+- Email: {{ remitente_email }}
+
+Sin otro particular, le saluda atentamente,
+
+
+_________________________
+{{ remitente_nombre }}
+RUT: {{ remitente_rut }}
+
+{% if adjuntos %}
+DOCUMENTOS ADJUNTOS:
+{% for adjunto in adjuntos %}
+- {{ adjunto }}
+{% endfor %}
+{% endif %}
+
+---
+IMPORTANTE: Se recomienda enviar esta carta por correo certificado o entregarla personalmente solicitando una copia firmada como constancia de recepción.

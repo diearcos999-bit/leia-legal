@@ -1,0 +1,95 @@
+FINIQUITO DE TRABAJO
+
+En {{ ciudad | default('Santiago') }}, a {{ fecha_documento | format_date }}, entre:
+
+EMPLEADOR:
+Nombre/Razón Social: {{ empleador_nombre }}
+RUT: {{ empleador_rut }}
+Domicilio: {{ empleador_direccion | default('') }}
+Representante Legal: {{ empleador_representante | default('') }}
+
+Y
+
+TRABAJADOR:
+Nombre: {{ trabajador_nombre }}
+RUT: {{ trabajador_rut }}
+Domicilio: {{ trabajador_direccion | default('') }}
+Nacionalidad: {{ trabajador_nacionalidad | default('Chilena') }}
+
+Se ha convenido el siguiente finiquito:
+
+PRIMERO: RELACIÓN LABORAL
+
+El trabajador prestó servicios para el empleador desde el {{ fecha_inicio | format_date }} hasta el {{ fecha_termino | format_date }}, desempeñándose en el cargo de {{ cargo | default('') }}.
+
+SEGUNDO: CAUSAL DE TÉRMINO
+
+La relación laboral termina por {{ causal_termino }}, conforme a lo establecido en el Código del Trabajo.
+
+TERCERO: REMUNERACIONES Y PAGOS
+
+El último sueldo mensual bruto del trabajador fue de {{ ultimo_sueldo }}.
+
+El empleador pagará al trabajador las siguientes sumas:
+
+1. Remuneración pendiente ({{ dias_trabajados | default(0) }} días): {{ remuneracion_pendiente | default('$0') }}
+2. Feriado proporcional ({{ dias_vacaciones | default(0) }} días): {{ feriado_proporcional | default('$0') }}
+3. Indemnización por años de servicio ({{ anos_servicio | default(0) }} años): {{ indemnizacion_anos | default('$0') }}
+4. Indemnización sustitutiva del aviso previo: {{ indemnizacion_aviso | default('$0') }}
+5. Gratificación proporcional: {{ gratificacion | default('$0') }}
+{% if otros_pagos %}
+6. Otros pagos: {{ otros_pagos }}
+{% endif %}
+
+TOTAL A PAGAR: {{ total_pago | default('$0') }}
+
+CUARTO: FORMA DE PAGO
+
+El pago se realizará mediante {{ forma_pago | default('cheque nominativo o transferencia bancaria') }}.
+
+QUINTO: DECLARACIONES
+
+El trabajador declara:
+a) Haber recibido oportunamente sus remuneraciones durante la vigencia del contrato.
+b) Haber hecho uso de sus feriados legales o recibir el pago compensatorio correspondiente.
+c) No tener reclamos pendientes contra el empleador derivados de la relación laboral.
+{% if tiene_finiquito_parcial %}
+d) Haber recibido finiquito parcial con fecha {{ fecha_finiquito_parcial }}.
+{% endif %}
+
+El empleador declara:
+a) Haber cumplido con todas las obligaciones laborales y previsionales.
+b) Haber enterado las cotizaciones previsionales correspondientes.
+
+SEXTO: RENUNCIA DE ACCIONES
+
+Ambas partes declaran no tener reclamos ni acciones pendientes que ejercer en contra de la otra, derivadas de la relación laboral que por este acto termina, renunciando expresamente a cualquier acción judicial o administrativa relacionada.
+
+SÉPTIMO: RATIFICACIÓN
+
+El presente finiquito deberá ser ratificado ante:
+{{ ratificacion_ante | default('Inspección del Trabajo, Notario Público, o el Oficial del Registro Civil de la comuna') }}.
+
+OCTAVO: EJEMPLARES
+
+El presente finiquito se firma en {{ ejemplares | default('tres') }} ejemplares del mismo tenor y fecha, quedando uno en poder del trabajador, otro en poder del empleador, y el tercero para el Ministro de Fe.
+
+
+_________________________                    _________________________
+FIRMA EMPLEADOR                              FIRMA TRABAJADOR
+{{ empleador_nombre }}                        {{ trabajador_nombre }}
+RUT: {{ empleador_rut }}                     RUT: {{ trabajador_rut }}
+
+
+_________________________
+MINISTRO DE FE
+{{ ministro_fe | default('') }}
+
+
+CERTIFICACIÓN
+Certifico que el presente finiquito ha sido ratificado ante mí, previa lectura y explicación de su contenido al trabajador, quien lo firma libremente.
+
+Fecha de ratificación: ________________
+
+_________________________
+FIRMA Y TIMBRE MINISTRO DE FE

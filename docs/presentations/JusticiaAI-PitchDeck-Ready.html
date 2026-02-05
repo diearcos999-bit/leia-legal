@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JusticiaAI - Pitch Deck</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #f9fafb;
+            overflow-x: hidden;
+        }
+
+        .slide {
+            width: 1920px;
+            height: 1080px;
+            background: white;
+            margin: 20px auto;
+            padding: 80px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 32px;
+            right: 80px;
+            font-size: 16px;
+            color: #6B7280;
+        }
+
+        /* Slide 1 - Cover */
+        .cover {
+            background: linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 100%);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cover .logo {
+            font-size: 72px;
+            font-weight: 700;
+            color: #1E40AF;
+            margin-bottom: 48px;
+        }
+
+        .cover .tagline {
+            font-size: 48px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 64px;
+            max-width: 900px;
+        }
+
+        .cover .founder {
+            font-size: 24px;
+            color: #4B5563;
+            margin: 48px 0;
+            line-height: 1.6;
+        }
+
+        .cover .funding {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2563EB;
+            margin-top: 48px;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 64px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 48px;
+        }
+
+        h2 {
+            font-size: 48px;
+            font-weight: 600;
+            color: #2563EB;
+            margin-bottom: 32px;
+        }
+
+        h3 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        .hero-stat {
+            font-size: 56px;
+            font-weight: 700;
+            color: #2563EB;
+            text-align: center;
+            margin: 48px 0;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin: 48px 0;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #D1D5DB;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            background: #DBEAFE;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .card h3 {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            font-size: 20px;
+            color: #4B5563;
+            line-height: 1.5;
+        }
+
+        /* Features */
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            margin: 48px 0;
+        }
+
+        .feature {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: #EFF6FF;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .feature-content h3 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .feature-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-content li {
+            font-size: 18px;
+            color: #4B5563;
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .feature-content li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #2563EB;
+        }
+
+        /* Circles */
+        .circles-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 600px;
+            position: relative;
+        }
+
+        .circle {
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .circle-tam {
+            width: 600px;
+            height: 600px;
+            background: rgba(219, 234, 254, 0.5);
+        }
+
+        .circle-sam {
+            width: 400px;
+            height: 400px;
+            background: rgba(147, 197, 253, 0.6);
+        }
+
+        .circle-som {
+            width: 220px;
+            height: 220px;
+            background: rgba(37, 99, 235, 0.8);
+            color: white;
+        }
+
+        .circle-label {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .circle-desc {
+            font-size: 18px;
+            margin-top: 8px;
+        }
+
+        /* Revenue Streams */
+        .revenue-streams {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 48px 0;
+        }
+
+        .revenue-item {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            background: #F9FAFB;
+            padding: 20px 32px;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+        }
+
+        .revenue-icon {
+            font-size: 48px;
+            color: #2563EB;
+        }
+
+        .revenue-name {
+            font-size: 28px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .revenue-percent {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2563EB;
+            margin: 0 24px;
+        }
+
+        .revenue-desc {
+            font-size: 18px;
+            color: #6B7280;
+        }
+
+        /* Unit Economics Box */
+        .economics-box {
+            background: #D1FAE5;
+            border: 3px solid #10B981;
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            margin-top: 48px;
+        }
+
+        .economics-box .big-number {
+            font-size: 56px;
+            font-weight: 700;
+            color: #10B981;
+        }
+
+        .economics-box .small-text {
+            font-size: 20px;
+            color: #6B7280;
+            margin-top: 8px;
+        }
+
+        /* Table */
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 48px 0;
+        }
+
+        .comp-table th {
+            background: #2563EB;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            border: 1px solid white;
+        }
+
+        .comp-table td {
+            padding: 24px;
+            text-align: center;
+            font-size: 28px;
+            border: 1px solid #D1D5DB;
+        }
+
+        .comp-table tr:first-child td {
+            background: #DBEAFE;
+            font-weight: 600;
+        }
+
+        .comp-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            background: #F9FAFB;
+        }
+
+        /* Financials */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 80px;
+            height: 400px;
+            margin: 64px 0;
+        }
+
+        .bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .bar-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2563EB;
+        }
+
+        .bar-column {
+            width: 180px;
+            background: #2563EB;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .bar-label {
+            font-size: 24px;
+            color: #6B7280;
+            margin-top: 16px;
+        }
+
+        /* Metrics */
+        .metrics {
+            display: flex;
+            justify-content: space-around;
+            margin: 48px 0;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2563EB;
+        }
+
+        .metric-label {
+            font-size: 20px;
+            color: #6B7280;
+            margin-top: 8px;
+        }
+
+        /* Bottom stat */
+        .bottom-stat {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #F59E0B;
+            margin-top: auto;
+            padding-top: 48px;
+        }
+
+        /* Tagline */
+        .tagline-bottom {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: #2563EB;
+            margin-top: auto;
+        }
+
+        /* Use of Funds */
+        .funds-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin: 48px 0;
+        }
+
+        .fund-item {
+            border: 2px solid #2563EB;
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        .fund-percent {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2563EB;
+        }
+
+        .fund-category {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 16px 0;
+        }
+
+        .fund-amount {
+            font-size: 24px;
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .fund-item ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 16px;
+        }
+
+        .fund-item li {
+            font-size: 18px;
+            color: #4B5563;
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .fund-item li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+        }
+
+        /* Milestones */
+        .milestones {
+            margin: 48px 0;
+        }
+
+        .milestone-item {
+            font-size: 24px;
+            margin: 16px 0;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .milestone-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10B981;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        /* Reason Cards */
+        .reason-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin: 48px 0;
+        }
+
+        .reason-card {
+            border: 1px solid #D1D5DB;
+            border-radius: 12px;
+            padding: 32px;
+            display: flex;
+            gap: 24px;
+        }
+
+        .reason-icon {
+            font-size: 56px;
+            flex-shrink: 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .slide {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide cover">
+    <div class="logo">JusticiaAI</div>
+    <div class="tagline">Democratizando el acceso a justicia en Chile con IA</div>
+    <div class="founder">
+        Roberto Arcos<br>
+        Founder & CEO<br>
+        <br>
+        roberto@justiciaai.cl<br>
+        +56 9 XXXX XXXX<br>
+        linkedin.com/in/robertoarcos
+    </div>
+    <div class="funding">
+        Buscando $300-500K USD<br>
+        Ronda Semilla • Enero 2025
+    </div>
+    <div class="slide-number">1 / 14</div>
+</div>
+
+<!-- SLIDE 2: PROBLEM -->
+<div class="slide">
+    <h1>El Problema</h1>
+    <div class="hero-stat">70% de los chilenos no puede<br>acceder a servicios legales</div>
+
+    <div class="cards-grid">
+        <div class="card">
+            <div class="card-icon">💰</div>
+            <h3>Costos Prohibitivos</h3>
+            <p>$500K+ por divorcio simple<br>Servicios legales inaccesibles para la mayoría</p>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🤔</div>
+            <h3>Complejidad</h3>
+            <p>79% no entiende el sistema judicial<br>Lenguaje legal incomprensible</p>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🕐</div>
+            <h3>Demoras</h3>
+            <p>400+ días toman procesos promedio<br>288-486 días según tipo de caso</p>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">❓</div>
+            <h3>Desinformación</h3>
+            <p>Ciudadanos no conocen sus derechos<br>No saben cómo evaluar abogados</p>
+        </div>
+    </div>
+
+    <div class="bottom-stat">= 1.5M personas con problemas legales sin resolver anualmente</div>
+    <div class="slide-number">2 / 14</div>
+</div>
+
+<!-- SLIDE 3: SOLUTION -->
+<div class="slide">
+    <h1>La Solución</h1>
+    <h2>IA Legal + Marketplace de Abogados Verificados</h2>
+
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">🤖</div>
+            <div class="feature-content">
+                <h3>Asistente IA Gratuito</h3>
+                <ul>
+                    <li>Orientación legal 24/7 en lenguaje simple</li>
+                    <li>Especializado en leyes chilenas</li>
+                    <li>Triaje automático de consultas</li>
+                    <li>Análisis preliminar de documentos</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">⚖️</div>
+            <div class="feature-content">
+                <h3>Marketplace de Abogados</h3>
+                <ul>
+                    <li>Verificados con credenciales reales</li>
+                    <li>Reviews y evaluaciones transparentes</li>
+                    <li>Precios claros desde el inicio</li>
+                    <li>Match inteligente por especialidad</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-content">
+                <h3>Automatización</h3>
+                <ul>
+                    <li>Generación de documentos legales</li>
+                    <li>Integración con tribunales (OJV)</li>
+                    <li>Seguimiento automático de causas</li>
+                    <li>Herramientas para abogados</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tagline-bottom">= LawConnect + LegalZoom para LATAM</div>
+    <div class="slide-number">3 / 14</div>
+</div>
+
+<!-- SLIDE 4: MARKET -->
+<div class="slide">
+    <h1>Oportunidad de Mercado</h1>
+    <h2>Mercado de $2 mil millones, creciendo</h2>
+
+    <div class="circles-container">
+        <div class="circle circle-tam">
+            <div class="circle-label">TAM: $2,000M</div>
+            <div class="circle-desc">Mercado legal total Chile</div>
+        </div>
+        <div class="circle circle-sam">
+            <div class="circle-label">SAM: $450M</div>
+            <div class="circle-desc">Segmento digitalizable</div>
+        </div>
+        <div class="circle circle-som">
+            <div class="circle-label">SOM: $10-15M</div>
+            <div class="circle-desc">Año 3 (2-3%)</div>
+        </div>
+    </div>
+
+    <div class="tagline-bottom">Capturar 2-3% del mercado digitalizable = $3.3M ARR en Año 3</div>
+    <div class="slide-number">4 / 14</div>
+</div>
+
+<!-- SLIDE 5: BUSINESS MODEL -->
+<div class="slide">
+    <h1>Modelo de Negocio</h1>
+    <h2>Múltiples fuentes de ingreso, escalables</h2>
+
+    <div class="revenue-streams">
+        <div class="revenue-item">
+            <div class="revenue-icon">💵</div>
+            <div class="revenue-name">Comisiones</div>
+            <div class="revenue-percent">40%</div>
+            <div class="revenue-desc">20-30% sobre honorarios</div>
+        </div>
+
+        <div class="revenue-item">
+            <div class="revenue-icon">🔄</div>
+            <div class="revenue-name">Suscripciones</div>
+            <div class="revenue-percent">25%</div>
+            <div class="revenue-desc">$55-135/mes por abogado</div>
+        </div>
+
+        <div class="revenue-item">
+            <div class="revenue-icon">📄</div>
+            <div class="revenue-name">Automatizados</div>
+            <div class="revenue-percent">20%</div>
+            <div class="revenue-desc">$10-50 por documento</div>
+        </div>
+
+        <div class="revenue-item">
+            <div class="revenue-icon">🏢</div>
+            <div class="revenue-name">B2B Corporativo</div>
+            <div class="revenue-percent">10%</div>
+            <div class="revenue-desc">$200-1K/mes empresas</div>
+        </div>
+
+        <div class="revenue-item">
+            <div class="revenue-icon">🤝</div>
+            <div class="revenue-name">Partnerships</div>
+            <div class="revenue-percent">5%</div>
+            <div class="revenue-desc">Seguros, alianzas estratégicas</div>
+        </div>
+    </div>
+
+    <div class="economics-box">
+        <div class="big-number">LTV/CAC: 2.5x</div>
+        <div class="small-text">(Año 3)</div>
+    </div>
+    <div class="slide-number">5 / 14</div>
+</div>
+
+<!-- SLIDE 6: TRACTION -->
+<div class="slide">
+    <h1>Validación Temprana & Roadmap</h1>
+
+    <div class="metrics">
+        <div class="metric">
+            <div class="metric-value">[X]</div>
+            <div class="metric-label">Waiting List</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">[X]</div>
+            <div class="metric-label">Abogados Comprometidos</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">[X]</div>
+            <div class="metric-label">LOIs Partners</div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 64px;">Roadmap</h2>
+
+    <div class="reason-cards">
+        <div class="reason-card">
+            <div class="reason-icon">🚀</div>
+            <div>
+                <h3>Mes 1-3: MVP</h3>
+                <p style="font-size: 20px; color: #4B5563; margin-top: 8px;">Chatbot IA + Marketplace básico • Target: 30 casos</p>
+            </div>
+        </div>
+
+        <div class="reason-card">
+            <div class="reason-icon">📊</div>
+            <div>
+                <h3>Mes 4-6: Beta Testing</h3>
+                <p style="font-size: 20px; color: #4B5563; margin-top: 8px;">Target: 100 casos completados • Validación product-market fit</p>
+            </div>
+        </div>
+
+        <div class="reason-card">
+            <div class="reason-icon">📈</div>
+            <div>
+                <h3>Mes 7-12: Escalar</h3>
+                <p style="font-size: 20px; color: #4B5563; margin-top: 8px;">Target: $50K MRR • 500 abogados • 10K usuarios</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-number">6 / 14</div>
+</div>
+
+<!-- SLIDE 7: COMPETITION -->
+<div class="slide">
+    <h1>Landscape Competitivo</h1>
+    <h2>Única plataforma con IA legal avanzada en Chile</h2>
+
+    <table class="comp-table">
+        <tr>
+            <th></th>
+            <th>IA Legal</th>
+            <th>Marketplace</th>
+            <th>Auto</th>
+            <th>B2B</th>
+        </tr>
+        <tr>
+            <td>JusticiaAI</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>Total Abogados</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>⚠️</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>Marketplaces</td>
+            <td>❌</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>CAJ</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+    </table>
+
+    <div class="tagline-bottom">Ventaja: 6-12 meses antes que competencia construya IA similar</div>
+    <div class="slide-number">7 / 14</div>
+</div>
+
+<!-- SLIDE 8: GTM -->
+<div class="slide">
+    <h1>Estrategia de Lanzamiento</h1>
+
+    <div style="text-align: center; margin: 64px 0;">
+        <div style="font-size: 32px; font-weight: 600; margin-bottom: 48px;">Funnel de Conversión</div>
+
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 24px;">
+            <div style="background: #DBEAFE; width: 800px; padding: 24px; border-radius: 8px; font-size: 28px; font-weight: 600;">
+                100,000 Visitors
+            </div>
+            <div style="font-size: 24px; color: #6B7280;">↓ 5% CTR</div>
+            <div style="background: #93C5FD; width: 700px; padding: 24px; border-radius: 8px; font-size: 28px; font-weight: 600;">
+                5,000 Registered
+            </div>
+            <div style="font-size: 24px; color: #6B7280;">↓ 20% Chat</div>
+            <div style="background: #60A5FA; width: 600px; padding: 24px; border-radius: 8px; font-size: 28px; font-weight: 600; color: white;">
+                1,000 Chat IA
+            </div>
+            <div style="font-size: 24px; color: #6B7280;">↓ 20% Request</div>
+            <div style="background: #3B82F6; width: 500px; padding: 24px; border-radius: 8px; font-size: 28px; font-weight: 600; color: white;">
+                200 Request Lawyer
+            </div>
+            <div style="font-size: 24px; color: #6B7280;">↓ 50% Hire</div>
+            <div style="background: #2563EB; width: 400px; padding: 24px; border-radius: 8px; font-size: 28px; font-weight: 600; color: white;">
+                100 Customers
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-around; margin-top: 48px;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 8px;">🔍</div>
+            <div style="font-size: 20px; font-weight: 600;">SEO</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 8px;">📢</div>
+            <div style="font-size: 20px; font-weight: 600;">SEM</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 8px;">📱</div>
+            <div style="font-size: 20px; font-weight: 600;">Social</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 8px;">🤝</div>
+            <div style="font-size: 20px; font-weight: 600;">Partners</div>
+        </div>
+    </div>
+
+    <div class="slide-number">8 / 14</div>
+</div>
+
+<!-- SLIDE 9: TEAM -->
+<div class="slide">
+    <h1>Equipo</h1>
+    <h2>Equipo con experiencia tech + legal</h2>
+
+    <div style="border: 2px solid #2563EB; border-radius: 16px; padding: 40px; margin: 48px 0; background: #F9FAFB;">
+        <h3 style="font-size: 36px; color: #2563EB; margin-bottom: 8px;">Roberto Arcos</h3>
+        <div style="font-size: 24px; color: #6B7280; margin-bottom: 24px;">Founder & CEO</div>
+        <ul style="list-style: none; padding: 0;">
+            <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                <span style="position: absolute; left: 0; color: #2563EB;">•</span>
+                [Tu experiencia relevante - ej: 10 años en tech, ex-Product Manager]
+            </li>
+            <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                <span style="position: absolute; left: 0; color: #2563EB;">•</span>
+                [Logro destacado - ej: Construí producto que generó $XM en revenue]
+            </li>
+            <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                <span style="position: absolute; left: 0; color: #2563EB;">•</span>
+                Skills: Producto, Legal-tech, Fundraising, Estrategia
+            </li>
+        </ul>
+    </div>
+
+    <div style="border: 2px solid #D1D5DB; border-radius: 16px; padding: 40px; background: white;">
+        <h3 style="font-size: 32px; margin-bottom: 16px;">Chief Technology Officer</h3>
+        <div style="font-size: 20px; color: #6B7280;">En búsqueda activa</div>
+        <div style="margin-top: 24px; font-size: 18px; color: #4B5563;">
+            Perfil deseado: 5+ años liderando equipos tech • Experiencia con IA/ML • Startup experience (0→1) • Full-stack (Python, React)
+        </div>
+    </div>
+
+    <div style="background: #DBEAFE; border-radius: 12px; padding: 32px; margin-top: 32px; text-align: center;">
+        <div style="font-size: 24px; font-weight: 600; color: #1E40AF;">
+            Buscando (con esta ronda): AI/ML Engineer • 2 Full-Stack Developers • Product Designer
+        </div>
+    </div>
+
+    <div class="slide-number">9 / 14</div>
+</div>
+
+<!-- SLIDE 10: FINANCIALS -->
+<div class="slide">
+    <h1>Proyecciones Financieras</h1>
+    <h2>Path to $3M+ ARR en 3 años</h2>
+
+    <div class="bar-chart">
+        <div class="bar">
+            <div class="bar-value">$66K</div>
+            <div class="bar-column" style="height: 60px;"></div>
+            <div class="bar-label">Año 1</div>
+        </div>
+        <div class="bar">
+            <div class="bar-value">$734K</div>
+            <div class="bar-column" style="height: 220px;"></div>
+            <div class="bar-label">Año 2</div>
+        </div>
+        <div class="bar">
+            <div class="bar-value">$3.3M</div>
+            <div class="bar-column" style="height: 340px;"></div>
+            <div class="bar-label">Año 3</div>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-around; margin-top: 64px;">
+        <div style="text-align: center;">
+            <div style="font-size: 28px; font-weight: 600; color: #111827;">Gross Margin</div>
+            <div style="font-size: 36px; font-weight: 700; color: #2563EB; margin-top: 8px;">60% → 85%</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 28px; font-weight: 600; color: #111827;">LTV/CAC</div>
+            <div style="font-size: 36px; font-weight: 700; color: #2563EB; margin-top: 8px;">1.0x → 2.5x</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 28px; font-weight: 600; color: #111827;">Break-even</div>
+            <div style="font-size: 36px; font-weight: 700; color: #10B981; margin-top: 8px;">Q4 Año 2</div>
+        </div>
+    </div>
+
+    <div class="slide-number">10 / 14</div>
+</div>
+
+<!-- SLIDE 11: FUNDING -->
+<div class="slide">
+    <div style="text-align: center;">
+        <h1 style="font-size: 72px; color: #2563EB; margin-bottom: 16px;">Buscamos $400K USD</h1>
+        <h2 style="font-size: 32px; color: #6B7280; margin-bottom: 64px;">Ronda Semilla • 15-20% equity</h2>
+    </div>
+
+    <div class="funds-grid">
+        <div class="fund-item">
+            <div class="fund-percent">40%</div>
+            <div class="fund-category">Desarrollo</div>
+            <div class="fund-amount">→ $160K</div>
+            <ul>
+                <li>Equipo técnico (3-4 developers)</li>
+                <li>Infraestructura cloud</li>
+                <li>Fine-tuning IA legal</li>
+            </ul>
+        </div>
+
+        <div class="fund-item">
+            <div class="fund-percent">30%</div>
+            <div class="fund-category">Marketing & Growth</div>
+            <div class="fund-amount">→ $120K</div>
+            <ul>
+                <li>Adquisición de usuarios</li>
+                <li>Reclutamiento abogados</li>
+                <li>Branding y contenido</li>
+            </ul>
+        </div>
+
+        <div class="fund-item">
+            <div class="fund-percent">20%</div>
+            <div class="fund-category">Operaciones</div>
+            <div class="fund-amount">→ $80K</div>
+            <ul>
+                <li>Salarios (CEO, CPO)</li>
+                <li>Oficina/admin</li>
+                <li>Verificación abogados</li>
+            </ul>
+        </div>
+
+        <div class="fund-item">
+            <div class="fund-percent">10%</div>
+            <div class="fund-category">Legal & Contingencia</div>
+            <div class="fund-amount">→ $40K</div>
+            <ul>
+                <li>Constitución empresa</li>
+                <li>Compliance</li>
+                <li>Buffer</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="milestones">
+        <h2 style="margin-bottom: 24px;">Milestones con esta Ronda:</h2>
+        <div class="milestone-item">MVP en 3 meses</div>
+        <div class="milestone-item">100 casos exitosos en 6 meses</div>
+        <div class="milestone-item">$50K MRR en 12 meses</div>
+    </div>
+
+    <div style="text-align: center; margin-top: 32px; font-size: 24px; font-weight: 600; color: #2563EB;">
+        Runway: 18 meses
+    </div>
+
+    <div class="slide-number">11 / 14</div>
+</div>
+
+<!-- SLIDE 12: WHY NOW -->
+<div class="slide">
+    <h1>¿Por Qué Ahora?</h1>
+    <h2>La ventana perfecta para JusticiaAI</h2>
+
+    <div class="reason-cards">
+        <div class="reason-card">
+            <div class="reason-icon">⚡</div>
+            <div>
+                <h3>Ventana Tecnológica</h3>
+                <p style="font-size: 20px; color: #4B5563; margin-top: 8px;">
+                    • Claude 3.5 y GPT-4 hacen IA legal viable por primera vez<br>
+                    • LLMs suficientemente buenos para entender contexto legal<br>
+                    • Ventaja del primero: 6-12 meses para construir corpus
+                </p>
+            </div>
+        </div>
+
+        <div class="reason-card">
+            <div class="reason-icon">🏆</div>
+            <div>
+                <h3>Ventana Competitiva</h3>
+                <p style="font-size: 20px; color: #4B5563; margin-top: 8px;">
+                    • Mercado no consolidado (Total Abogados es joven, 2018)<br>
+                    • Competencia sin IA avanzada aún<br>
+                    • 6-12 meses antes de que otros construyan IA similar
+                </p>
+            </div>
+        </div>
+
+        <div class="reason-card">
+            <div class="reason-icon">📈</div>
+            <div>
+                <h3>Momentum Regulatorio</h3>
+                <p style="font-size: 20px; color: #4B5563; margin-top: 8px;">
+                    • Ley 21.719 (Protección de Datos) entra 2026 → impulsa compliance<br>
+                    • Poder Judicial adopta IA en tribunales (proyecto 2025)<br>
+                    • Modernización del sistema judicial (OJV, expediente electrónico)
+                </p>
+            </div>
+        </div>
+
+        <div class="reason-card">
+            <div class="reason-icon">🌍</div>
+            <div>
+                <h3>Post-COVID</h3>
+                <p style="font-size: 20px; color: #4B5563; margin-top: 8px;">
+                    • Adopción digital acelerada y permanente (+250%)<br>
+                    • Usuarios listos para servicios legales online<br>
+                    • Reuniones virtuales normalizadas
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tagline-bottom">First-mover advantage: Quien llegue primero con IA legal + marketplace gana</div>
+
+    <div class="slide-number">12 / 14</div>
+</div>
+
+<!-- SLIDE 13: VISION -->
+<div class="slide">
+    <h1>Visión: Líder de Legaltech en LATAM</h1>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin: 64px 0;">
+        <div style="border: 2px solid #2563EB; border-radius: 16px; padding: 40px; background: #EFF6FF;">
+            <h2 style="color: #2563EB; margin-bottom: 24px;">Año 1-2: Dominar Chile</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #2563EB;">•</span>
+                    #1 plataforma de servicios legales online
+                </li>
+                <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #2563EB;">•</span>
+                    50,000+ usuarios activos
+                </li>
+                <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #2563EB;">•</span>
+                    1,000+ abogados verificados
+                </li>
+                <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #2563EB;">•</span>
+                    Cobertura nacional
+                </li>
+            </ul>
+        </div>
+
+        <div style="border: 2px solid #10B981; border-radius: 16px; padding: 40px; background: #D1FAE5;">
+            <h2 style="color: #10B981; margin-bottom: 24px;">Año 3+: Expandir LATAM</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #10B981;">•</span>
+                    Lanzamiento en Perú (33M hab)
+                </li>
+                <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #10B981;">•</span>
+                    Lanzamiento en Colombia (51M hab)
+                </li>
+                <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #10B981;">•</span>
+                    Preparación Argentina (45M hab)
+                </li>
+                <li style="font-size: 20px; margin: 12px 0; padding-left: 24px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #10B981;">•</span>
+                    200M+ personas alcanzadas
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 64px; margin-bottom: 32px;">Impacto Social</h2>
+    <div style="display: flex; justify-content: space-around;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; font-weight: 700; color: #10B981;">100K+</div>
+            <div style="font-size: 20px; color: #6B7280; margin-top: 8px;">personas con<br>acceso a justicia</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 48px; font-weight: 700; color: #10B981;">5K+</div>
+            <div style="font-size: 20px; color: #6B7280; margin-top: 8px;">abogados<br>empoderados</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 48px; font-weight: 700; color: #10B981;">Millones</div>
+            <div style="font-size: 20px; color: #6B7280; margin-top: 8px;">ahorrados en<br>costos legales</div>
+        </div>
+    </div>
+
+    <div class="tagline-bottom">Tecnología al servicio de la justicia</div>
+
+    <div class="slide-number">13 / 14</div>
+</div>
+
+<!-- SLIDE 14: CONTACT -->
+<div class="slide cover">
+    <h1 style="font-size: 56px; margin-bottom: 64px;">¿Listos para democratizar<br>la justicia en Chile?</h1>
+
+    <div class="logo" style="font-size: 64px; margin-bottom: 64px;">JusticiaAI</div>
+
+    <div style="font-size: 28px; line-height: 1.8; color: #111827;">
+        <strong>Roberto Arcos</strong><br>
+        Founder & CEO<br>
+        <br>
+        📧 roberto@justiciaai.cl<br>
+        📱 +56 9 XXXX XXXX<br>
+        💼 linkedin.com/in/robertoarcos
+    </div>
+
+    <div style="margin-top: 64px; font-size: 20px; color: #6B7280;">
+        Let's build JusticiaAI together
+    </div>
+
+    <div class="slide-number">14 / 14</div>
+</div>
+
+<script>
+// Optional: Add keyboard navigation
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        window.scrollBy(0, 1100);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        window.scrollBy(0, -1100);
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+# ===================================================================
+# JUSTICIAAI - RAG SYSTEM CONFIGURATION
+# ===================================================================
+
+# Vector Store Configuration
+vector_store:
+  provider: "pinecone"  # pinecone | weaviate | chroma
+  index_name: "justiciaai-legal"
+  dimension: 1536  # OpenAI text-embedding-3-small
+  metric: "cosine"  # cosine | euclidean | dotproduct
+
+# Embeddings Configuration
+embeddings:
+  provider: "openai"
+  model: "text-embedding-3-small"
+  dimension: 1536
+  batch_size: 100
+
+# RAG Configuration
+rag:
+  enabled: true
+  top_k: 3  # Número de documentos relevantes a recuperar
+  similarity_threshold: 0.7  # Umbral mínimo de similitud (0-1)
+  rerank: false  # Reordenar resultados (requiere modelo adicional)
+
+# Data Collection Configuration
+data_collection:
+  # Frecuencia de actualización
+  update_schedule:
+    bcn_laws: "monthly"  # monthly | weekly | daily
+    dt_guides: "monthly"
+    sernac_guides: "monthly"
+
+  # Fuentes prioritarias
+  sources:
+    bcn:
+      enabled: true
+      priority_laws:
+        - "codigo_trabajo"
+        - "codigo_civil"
+        - "ley_consumidor"
+        - "codigo_familia"
+        - "pension_alimenticia"
+
+    dt:
+      enabled: true
+      topics:
+        - "finiquito"
+        - "despido"
+        - "jornada_laboral"
+        - "vacaciones"
+        - "sueldo_minimo"
+
+    sernac:
+      enabled: true
+      categories:
+        - "derechos_basicos"
+        - "garantias"
+        - "cobranzas"
+
+# Text Processing Configuration
+text_processing:
+  chunk_size: 1000  # Tamaño máximo de chunk en caracteres
+  chunk_overlap: 200  # Solapamiento entre chunks
+  min_chunk_size: 100  # Tamaño mínimo de chunk
+
+# API Configuration
+api:
+  anthropic:
+    model: "claude-3-haiku-20240307"
+    max_tokens: 1024
+    temperature: 0.7  # 0-1, menor = más determinístico
+
+  openai:
+    embedding_model: "text-embedding-3-small"
+
+# Rate Limiting
+rate_limiting:
+  requests_per_minute: 60
+  batch_delay_seconds: 0.5
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG | INFO | WARNING | ERROR
+  file: "logs/justiciaai.log"
+  console: true
+
+# Storage Paths
+storage:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  embeddings: "data/embeddings"
+  feedbacks: "feedbacks.json"
+  logs: "logs/"
+
+# Cost Estimation
+costs:
+  # Precios aproximados (USD)
+  openai_embeddings_per_1m_tokens: 0.02
+  pinecone_free_tier_vectors: 100000
+  anthropic_haiku_input_per_1m_tokens: 0.25
+  anthropic_haiku_output_per_1m_tokens: 1.25

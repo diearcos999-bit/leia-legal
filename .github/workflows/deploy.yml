@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Deploy Frontend to Vercel (placeholder)
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        # This is a placeholder - configure with your Vercel project
+        run: |
+          echo "Frontend deployment would happen here"
+          echo "Configure Vercel deployment in your project settings"
+          echo "Or use: npx vercel --prod --token=\$VERCEL_TOKEN"
+        # env:
+        #   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        #   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        #   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  # Deploy Backend to Railway (placeholder)
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        # This is a placeholder - configure with your Railway project
+        run: |
+          echo "Backend deployment would happen here"
+          echo "Configure Railway deployment in your project settings"
+        # env:
+        #   RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
