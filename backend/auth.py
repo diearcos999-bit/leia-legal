@@ -30,6 +30,62 @@ MAX_PASSWORD_LENGTH = 128
 MAX_NAME_LENGTH = 100
 
 
+def validate_rut(rut: str) -> bool:
+    """
+    Valida un RUT chileno.
+    Acepta formatos: 12345678-9, 12.345.678-9, 123456789
+    """
+    # Limpiar el RUT
+    rut = rut.upper().replace(".", "").replace("-", "").replace(" ", "")
+
+    if len(rut) < 8 or len(rut) > 9:
+        return False
+
+    # Separar cuerpo y dígito verificador
+    cuerpo = rut[:-1]
+    dv = rut[-1]
+
+    # Validar que el cuerpo sea numérico
+    if not cuerpo.isdigit():
+        return False
+
+    # Calcular dígito verificador
+    suma = 0
+    multiplo = 2
+
+    for c in reversed(cuerpo):
+        suma += int(c) * multiplo
+        multiplo = multiplo + 1 if multiplo < 7 else 2
+
+    resto = suma % 11
+    dv_calculado = 11 - resto
+
+    if dv_calculado == 11:
+        dv_esperado = "0"
+    elif dv_calculado == 10:
+        dv_esperado = "K"
+    else:
+        dv_esperado = str(dv_calculado)
+
+    return dv == dv_esperado
+
+
+def format_rut(rut: str) -> str:
+    """Formatea un RUT al formato estándar XX.XXX.XXX-X"""
+    rut = rut.upper().replace(".", "").replace("-", "").replace(" ", "")
+    if len(rut) < 2:
+        return rut
+    cuerpo = rut[:-1]
+    dv = rut[-1]
+    # Formatear con puntos
+    cuerpo_formateado = ""
+    for i, c in enumerate(reversed(cuerpo)):
+        if i > 0 and i % 3 == 0:
+            cuerpo_formateado = "." + cuerpo_formateado
+        cuerpo_formateado = c + cuerpo_formateado
+    return f"{cuerpo_formateado}-{dv}"
+
+
 def sanitize_string(value: str) -> str:
     """Remove potentially dangerous characters from strings."""
     if not value:
@@ -45,6 +101,8 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=MIN_PASSWORD_LENGTH, max_length=MAX_PASSWORD_LENGTH)
     full_name: Optional[str] = Field(None, max_length=MAX_NAME_LENGTH)
+    rut: str = Field(..., min_length=8, max_length=12)
+    phone: Optional[str] = Field(None, max_length=20)
 
     @field_validator('password')
     @classmethod
@@ -69,6 +127,26 @@ class UserCreate(BaseModel):
             raise ValueError(f'El nombre no puede exceder {MAX_NAME_LENGTH} caracteres')
         return v
 
+    @field_validator('rut')
+    @classmethod
+    def validate_rut_field(cls, v: str) -> str:
+        v = sanitize_string(v)
+        if not validate_rut(v):
+            raise ValueError('RUT inválido. Verifica que esté correcto.')
+        return format_rut(v)
+
+    @field_validator('phone')
+    @classmethod
+    def validate_phone_field(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        v = sanitize_string(v)
+        # Remover caracteres no numéricos excepto +
+        cleaned = re.sub(r'[^\d+]', '', v)
+        if len(cleaned) < 8 or len(cleaned) > 15:
+            raise ValueError('El teléfono debe tener entre 8 y 15 dígitos')
+        return cleaned
+
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -79,6 +157,8 @@ class UserResponse(BaseModel):
     id: int
     email: str
     full_name: Optional[str]
+    rut: Optional[str]
+    phone: Optional[str]
     is_active: bool
     is_verified: bool
     role: str
@@ -205,6 +285,8 @@ def create_user(db: Session, user: UserCreate, role: str = "user") -> User:
         email=user.email,
         hashed_password=hashed_password,
         full_name=user.full_name,
+        rut=user.rut,
+        phone=user.phone,
         role=role
     )
     db.add(db_user)

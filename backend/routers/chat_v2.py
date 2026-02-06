@@ -199,11 +199,29 @@ async def chat_v2(
 
 ## INSTRUCCIÓN ESPECIAL PARA ESTA RESPUESTA
 
-{triage_result.reason}
+La consulta es vaga o general. NO digas que no tienes información.
+En su lugar:
+1) Haz preguntas para entender mejor la situación del usuario
+2) Da orientación general sobre el tema mientras obtienes más contexto
+3) NO derives a abogado todavía, primero entiende el caso
 
-Debes responder honestamente que no tienes información sobre este tema.
-Usa el formato de respuesta para "cuando no hay info".
-Sugiere consultar con un abogado especializado en: {', '.join(triage_result.suggested_specialties)}
+Área detectada: {', '.join(triage_result.suggested_specialties)}
+"""
+
+    elif triage_result.decision == TriageDecision.DIRECT_LAWYER_REQUEST:
+        # Usuario pidió DIRECTAMENTE un abogado - respuesta MUY BREVE
+        # El botón de "Ver abogados" se mostrará automáticamente
+        specialty = triage_result.suggested_specialties[0] if triage_result.suggested_specialties else "tu caso"
+        system_prompt += f"""
+
+## INSTRUCCIÓN ESPECIAL: RESPUESTA DIRECTA Y BREVE
+
+El usuario ya pidió explícitamente conectarse con un abogado.
+RESPONDE EN UNA SOLA ORACIÓN BREVE, algo como:
+"Perfecto, te conecto con abogados especializados en {specialty}."
+
+NO des más explicaciones, NO hagas más preguntas, NO alargues la respuesta.
+El sistema mostrará automáticamente el botón de "Ver abogados" debajo de tu mensaje.
 """
 
     elif triage_result.decision in [TriageDecision.URGENT_MATTER, TriageDecision.SENSITIVE_TOPIC]:
@@ -221,11 +239,17 @@ Especialidades sugeridas: {', '.join(triage_result.suggested_specialties)}
     elif triage_result.decision == TriageDecision.REQUIRES_LAWYER:
         system_prompt += f"""
 
-## INSTRUCCIÓN ESPECIAL: DERIVACIÓN
+## INSTRUCCIÓN ESPECIAL: ORIENTACIÓN CON OPCIÓN DE DERIVACIÓN
 
-El usuario necesita asesoría legal profesional.
-Después de orientar brevemente, ofrece la derivación.
-Especialidades sugeridas: {', '.join(triage_result.suggested_specialties)}
+El usuario tiene un problema legal que podría necesitar abogado.
+PERO NO lo derives inmediatamente. Primero:
+
+1) Hazle PREGUNTAS para entender mejor su situación específica
+2) Dale ORIENTACIÓN GENERAL sobre sus derechos y opciones
+3) Al FINAL de tu respuesta (no antes), menciona brevemente que puede conectarse con un abogado de LEIA si necesita asesoría profesional
+
+NO alargues innecesariamente. Sé conciso pero útil.
+Especialidades detectadas: {', '.join(triage_result.suggested_specialties)}
 """
 
     # 6. Construir mensajes para Claude
@@ -316,18 +340,20 @@ Especialidades sugeridas: {', '.join(triage_result.suggested_specialties)}
             ))
 
     # 10. Preparar sugerencia de derivación
+    # SOLO mostrar botón de abogado cuando:
+    # - Es urgente o sensible (requiere atención inmediata)
+    # - El usuario PIDIÓ DIRECTAMENTE un abogado
+    # NO mostrar botón para REQUIRES_LAWYER (primero orientar)
     referral = None
     if triage_result.decision in [
         TriageDecision.URGENT_MATTER,
         TriageDecision.SENSITIVE_TOPIC,
-        TriageDecision.REQUIRES_LAWYER,
-        TriageDecision.NO_INFO_AVAILABLE
+        TriageDecision.DIRECT_LAWYER_REQUEST  # Usuario pidió abogado directamente
     ]:
         urgency_map = {
             TriageDecision.URGENT_MATTER: "urgent",
             TriageDecision.SENSITIVE_TOPIC: "high",
-            TriageDecision.REQUIRES_LAWYER: "medium",
-            TriageDecision.NO_INFO_AVAILABLE: "low"
+            TriageDecision.DIRECT_LAWYER_REQUEST: "high"  # Alta prioridad porque ya lo pidió
         }
 
         referral = ReferralSuggestion(

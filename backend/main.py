@@ -47,6 +47,7 @@ from routers import chat_v2 as chat_v2_router
 from routers import messages as messages_router
 from routers import notifications as notifications_router
 from routers import calls as calls_router
+from routers import oauth as oauth_router
 
 # Initialize rate limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -71,6 +72,7 @@ app.include_router(chat_v2_router.router)
 app.include_router(messages_router.router)
 app.include_router(notifications_router.router)
 app.include_router(calls_router.router)
+app.include_router(oauth_router.router)
 
 # Initialize database on startup
 @app.on_event("startup")

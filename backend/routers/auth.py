@@ -23,12 +23,20 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     """
     Registra un nuevo usuario.
     """
-    # Check if user exists
+    # Check if email exists
     existing_user = get_user_by_email(db, user_data.email)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El email ya está registrado"
+        )
+
+    # Check if RUT exists
+    existing_rut = db.query(User).filter(User.rut == user_data.rut).first()
+    if existing_rut:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El RUT ya está registrado"
         )
 
     # Create user

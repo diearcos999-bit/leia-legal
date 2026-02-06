@@ -36,14 +36,14 @@ const suggestions = [
 ]
 
 const areas = [
-  { name: "Laboral", icon: Briefcase, href: "/chat?area=laboral", description: "Despidos, contratos, finiquitos" },
-  { name: "Familia", icon: Heart, href: "/chat?area=familia", description: "Divorcios, custodia, pensiones" },
-  { name: "Deudas", icon: CreditCard, href: "/chat?area=deudas", description: "Cobranzas, renegociacion" },
-  { name: "Arriendos", icon: Home, href: "/chat?area=arriendos", description: "Contratos, desahucios" },
-  { name: "Consumidor", icon: ShoppingBag, href: "/chat?area=consumidor", description: "Reclamos, garantias" },
-  { name: "Salud", icon: Stethoscope, href: "/chat?area=salud", description: "ISAPRE, licencias, GES" },
-  { name: "Herencias", icon: FileText, href: "/chat?area=herencias", description: "Testamentos, posesiones" },
-  { name: "Penal", icon: Scale, href: "/chat?area=penal", description: "Defensas, querellas" },
+  { name: "Laboral", icon: Briefcase, href: "/chat?area=laboral", description: "Despidos, finiquitos, contratos" },
+  { name: "Familia", icon: Heart, href: "/chat?area=familia", description: "Pensión, divorcio, custodia" },
+  { name: "Deudas", icon: CreditCard, href: "/chat?area=deudas", description: "Embargo, DICOM, cobranza" },
+  { name: "Arriendos", icon: Home, href: "/chat?area=arriendos", description: "Desahucio, garantía, daños" },
+  { name: "Consumidor", icon: ShoppingBag, href: "/chat?area=consumidor", description: "SERNAC, garantías, reclamos" },
+  { name: "Civil", icon: FileText, href: "/chat?area=civil", description: "Contratos, indemnizaciones" },
+  { name: "Herencias", icon: FileText, href: "/chat?area=sucesiones", description: "Testamentos, partición" },
+  { name: "Penal", icon: Scale, href: "/chat?area=penal", description: "Denuncias, querellas, defensa" },
 ]
 
 const stats = [
@@ -80,32 +80,40 @@ export default function HomePage() {
               <div className="text-center lg:text-left">
                 {/* Badge */}
                 <div
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pacific-100 text-pacific-700 text-sm font-medium mb-4 animate-fade-in opacity-0"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-slate-200/50 text-slate-600 text-sm font-medium mb-4 animate-fade-in opacity-0"
                   style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}
                 >
-                  <svg viewBox="0 0 30 20" className="h-4 w-6 rounded shadow-sm" aria-label="Chile">
-                    <rect x="0" y="0" width="10" height="10" fill="#0039A6" />
-                    <polygon points="5,2 6.2,5.5 9.5,5.5 6.8,7.5 7.8,11 5,8.5 2.2,11 3.2,7.5 0.5,5.5 3.8,5.5" fill="white" transform="scale(0.7) translate(2.1, 1.4)" />
-                    <rect x="10" y="0" width="20" height="10" fill="white" />
-                    <rect x="0" y="10" width="30" height="10" fill="#D52B1E" />
-                  </svg>
-                  Especializado en leyes de Chile
+                  <span className="text-lg">🇨🇱</span>
+                  Hecho para el sistema legal chileno
                 </div>
 
-                {/* Headline */}
-                <h1
-                  className="text-4xl sm:text-5xl lg:text-6xl font-semibold mb-3 animate-fade-in-up opacity-0"
+                {/* Headline - Profesional y elegante */}
+                <div
+                  className="mb-3 animate-fade-in-up opacity-0"
                   style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}
                 >
-                  <span className="text-slate-900">Hola, soy </span>
-                  <span className="text-gradient">LEIA</span>
-                </h1>
+                  <h1 className="flex items-baseline justify-center lg:justify-start gap-3">
+                    <span
+                      className="text-3xl sm:text-4xl lg:text-5xl text-slate-800 font-medium"
+                      style={{ letterSpacing: '0.01em' }}
+                    >
+                      ¡Hola! Soy
+                    </span>
+                    <span
+                      className="text-4xl sm:text-5xl lg:text-6xl bg-gradient-to-r from-pacific-600 via-pacific-500 to-teal-400 bg-clip-text text-transparent font-bold"
+                      style={{ letterSpacing: '-0.02em' }}
+                    >
+                      LEIA
+                    </span>
+                  </h1>
+                  <p className="text-sm text-slate-500 mt-3 font-medium tracking-wide">Tu asistente legal con IA</p>
+                </div>
 
                 <p
-                  className="text-lg lg:text-xl text-slate-600 max-w-lg animate-fade-in-up opacity-0 mb-4"
-                  style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}
+                  className="text-lg text-slate-600 max-w-lg animate-fade-in-up opacity-0 mb-4 font-normal"
+                  style={{ animationDelay: '400ms', animationFillMode: 'forwards', lineHeight: '1.6' }}
                 >
-                  Tu asistente legal con IA. Cuentame tu problema y te ayudo.
+                  Te oriento en tu situacion legal y, si lo necesitas, te conecto con abogados verificados.
                 </p>
 
                 {/* Stats badge */}
@@ -139,8 +147,8 @@ export default function HomePage() {
             >
               {/* Disclaimer */}
               <div className="flex items-center justify-center gap-2 text-sm text-slate-500 mb-4">
-                <Scale className="h-4 w-4 text-pacific-500" />
-                <span>LEIA te orienta, pero <strong>no reemplaza</strong> a un abogado</span>
+                <Scale className="h-4 w-4 text-slate-400" />
+                <span>LEIA entrega orientacion legal general y no reemplaza la asesoria profesional de un abogado.</span>
               </div>
 
               {/* Trust indicators */}

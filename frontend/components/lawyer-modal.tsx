@@ -1,11 +1,22 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Star, MapPin, Clock, Shield, CheckCircle2, FileText, MessageSquare, User, ChevronRight, ChevronLeft, Loader2, Scale, BadgeCheck } from 'lucide-react'
+import { X, Star, MapPin, Clock, Shield, CheckCircle2, FileText, MessageSquare, User, ChevronRight, ChevronLeft, Loader2, Scale, BadgeCheck, Navigation, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
+// Comunas de la Región Metropolitana (principales)
+const COMUNAS_RM = [
+  'Santiago Centro', 'Providencia', 'Las Condes', 'Vitacura', 'Lo Barnechea',
+  'Ñuñoa', 'La Reina', 'Peñalolén', 'Macul', 'San Joaquín',
+  'La Florida', 'Puente Alto', 'La Granja', 'San Ramón', 'San Miguel',
+  'Pedro Aguirre Cerda', 'Lo Espejo', 'El Bosque', 'La Cisterna', 'San Bernardo',
+  'Maipú', 'Cerrillos', 'Estación Central', 'Quinta Normal', 'Lo Prado',
+  'Pudahuel', 'Cerro Navia', 'Renca', 'Quilicura', 'Huechuraba',
+  'Recoleta', 'Independencia', 'Conchalí', 'Colina', 'Lampa'
+]
 
 interface Lawyer {
   id: number
@@ -33,6 +44,8 @@ interface LawyerModalProps {
   lawyers: Lawyer[]
   legalArea: string
   onTransferComplete?: (lawyerId: number) => void
+  isAuthenticated?: boolean
+  onRequireAuth?: () => void
 }
 
 type Step = 'select' | 'consent' | 'confirmation'
@@ -49,7 +62,7 @@ interface ContactForm {
   when: 'today' | 'tomorrow' | 'anytime'
 }
 
-export function LawyerModal({ isOpen, onClose, lawyers, legalArea, onTransferComplete }: LawyerModalProps) {
+export function LawyerModal({ isOpen, onClose, lawyers, legalArea, onTransferComplete, isAuthenticated = false, onRequireAuth }: LawyerModalProps) {
   const [step, setStep] = useState<Step>('select')
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null)
   const [consent, setConsent] = useState<ConsentState>({
@@ -66,12 +79,61 @@ export function LawyerModal({ isOpen, onClose, lawyers, legalArea, onTransferCom
   const [lawyerDetails, setLawyerDetails] = useState<Lawyer | null>(null)
   const [loadingDetails, setLoadingDetails] = useState(false)
 
+  // Location state
+  const [userLocation, setUserLocation] = useState<string>('')
+  const [showComunaSelector, setShowComunaSelector] = useState(false)
+  const [comunaSearch, setComunaSearch] = useState('')
+  const [loadingLocation, setLoadingLocation] = useState(false)
+
+  // Filter comunas based on search
+  const filteredComunas = COMUNAS_RM.filter(comuna =>
+    comuna.toLowerCase().includes(comunaSearch.toLowerCase())
+  )
+
+  // Get user's location via browser geolocation
+  const handleGetLocation = () => {
+    setLoadingLocation(true)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            // Use reverse geocoding to get comuna name
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+            )
+            const data = await response.json()
+            const comuna = data.address?.suburb || data.address?.city_district || data.address?.town || 'Santiago'
+            setUserLocation(comuna)
+          } catch {
+            setUserLocation('Santiago Centro')
+          }
+          setLoadingLocation(false)
+        },
+        () => {
+          setLoadingLocation(false)
+          setShowComunaSelector(true)
+        }
+      )
+    } else {
+      setLoadingLocation(false)
+      setShowComunaSelector(true)
+    }
+  }
+
+  const handleSelectComuna = (comuna: string) => {
+    setUserLocation(comuna)
+    setShowComunaSelector(false)
+    setComunaSearch('')
+  }
+
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
       setStep('select')
       setSelectedLawyer(null)
       setConsent({ shareChat: false, shareContact: false, shareDocuments: false })
+      setShowComunaSelector(false)
+      setComunaSearch('')
     }
   }, [isOpen])
 
@@ -92,10 +154,25 @@ export function LawyerModal({ isOpen, onClose, lawyers, legalArea, onTransferCom
   }
 
   const handleSelectLawyer = (lawyer: Lawyer) => {
+    // Require authentication to contact a lawyer
+    if (!isAuthenticated && onRequireAuth) {
+      setSelectedLawyer(lawyer) // Save selection for after auth
+      onRequireAuth()
+      return
+    }
+
     setSelectedLawyer(lawyer)
     fetchLawyerDetails(lawyer.id)
     setStep('consent')
   }
+
+  // Continue after authentication
+  useEffect(() => {
+    if (isAuthenticated && selectedLawyer && step === 'select') {
+      fetchLawyerDetails(selectedLawyer.id)
+      setStep('consent')
+    }
+  }, [isAuthenticated])
 
   const handleBack = () => {
     if (step === 'consent') {
@@ -205,6 +282,77 @@ export function LawyerModal({ isOpen, onClose, lawyers, legalArea, onTransferCom
           {/* Step 1: Select Lawyer */}
           {step === 'select' && (
             <div className="space-y-4">
+              {/* Location Selector */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-pacific-500" />
+                    <span className="text-sm font-medium text-slate-700">Tu ubicación:</span>
+                    {userLocation ? (
+                      <span className="text-sm text-pacific-600 font-medium">{userLocation}</span>
+                    ) : (
+                      <span className="text-sm text-slate-400">No especificada</span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleGetLocation}
+                      disabled={loadingLocation}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-pacific-600 bg-pacific-50 rounded-lg hover:bg-pacific-100 transition-colors"
+                    >
+                      {loadingLocation ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Navigation className="h-3 w-3" />
+                      )}
+                      Usar mi ubicación
+                    </button>
+                    <button
+                      onClick={() => setShowComunaSelector(!showComunaSelector)}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                    >
+                      <Search className="h-3 w-3" />
+                      Elegir comuna
+                    </button>
+                  </div>
+                </div>
+
+                {/* Comuna Selector Dropdown */}
+                {showComunaSelector && (
+                  <div className="mt-3 pt-3 border-t border-slate-200">
+                    <input
+                      type="text"
+                      value={comunaSearch}
+                      onChange={(e) => setComunaSearch(e.target.value)}
+                      placeholder="Buscar comuna..."
+                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:border-pacific-500 focus:ring-1 focus:ring-pacific-500 outline-none"
+                    />
+                    <div className="mt-2 max-h-40 overflow-y-auto">
+                      {filteredComunas.slice(0, 10).map((comuna) => (
+                        <button
+                          key={comuna}
+                          onClick={() => handleSelectComuna(comuna)}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-pacific-50 rounded-lg transition-colors"
+                        >
+                          {comuna}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Free Contact Banner */}
+              <div className="p-3 bg-green-50 rounded-xl border border-green-200 flex items-center gap-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-green-800">100% gratis para ti</p>
+                  <p className="text-xs text-green-600">Contacta abogados sin costo. Los honorarios se acuerdan directamente si decides contratarlos.</p>
+                </div>
+              </div>
+
               {lawyers.length === 0 ? (
                 <div className="text-center py-8 text-slate-500">
                   No hay abogados disponibles en este momento
@@ -273,11 +421,11 @@ export function LawyerModal({ isOpen, onClose, lawyers, legalArea, onTransferCom
 
                         <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
                           <div>
-                            <span className="text-lg font-bold text-slate-800">{lawyer.price_display}</span>
-                            <span className="text-xs text-slate-500 ml-1">consulta inicial</span>
+                            <span className="text-xs text-slate-500">Honorarios desde</span>
+                            <span className="text-base font-bold text-slate-800 ml-1">{lawyer.price_display}</span>
                           </div>
-                          <div className="flex items-center gap-1 text-pacific-600 font-medium text-sm group-hover:translate-x-1 transition-transform">
-                            Seleccionar <ChevronRight className="h-4 w-4" />
+                          <div className="flex items-center gap-1 px-3 py-1.5 bg-pacific-500 text-white rounded-lg font-medium text-sm group-hover:bg-pacific-600 transition-colors">
+                            Contactar gratis <ChevronRight className="h-4 w-4" />
                           </div>
                         </div>
                       </div>

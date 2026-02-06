@@ -36,7 +36,9 @@ export interface LoginCredentials {
 export interface RegisterData {
   email: string
   password: string
-  full_name?: string
+  full_name: string
+  rut: string
+  phone: string
 }
 
 export interface AuthContextType extends AuthState {

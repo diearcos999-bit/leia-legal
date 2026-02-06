@@ -4,11 +4,13 @@ import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { LeiaAvatar } from '@/components/ui/leia-avatar'
-import { Send, User, ArrowLeft, Sparkles, ThumbsUp, ThumbsDown, Loader2, Scale, ChevronRight } from 'lucide-react'
+import { Send, User, ArrowLeft, Sparkles, ThumbsUp, ThumbsDown, Loader2, Scale, ChevronRight, LogIn } from 'lucide-react'
 import { LeiaLogo } from '@/components/ui/leia-logo'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { LawyerModal } from '@/components/lawyer-modal'
+import { AuthModal } from '@/components/auth-modal'
+import { useAuth } from '@/hooks/useAuth'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -71,6 +73,22 @@ function ChatContent() {
   const [modalLawyers, setModalLawyers] = useState<Lawyer[]>([])
   const [modalLegalArea, setModalLegalArea] = useState('')
   const [loadingLawyers, setLoadingLawyers] = useState(false)
+
+  // Auth state
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    canAskQuestion,
+    remainingQuestions,
+    user,
+    login,
+    register,
+    logout,
+    incrementQuestionCount,
+    QUESTION_LIMIT
+  } = useAuth()
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalReason, setAuthModalReason] = useState<'limit' | 'lawyer'>('limit')
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -135,10 +153,11 @@ function ChatContent() {
     }
   }
 
-  // Open modal and fetch lawyers
+  // Open modal and fetch lawyers - NO requiere auth para VER abogados
   const handleOpenLawyerModal = async (specialties: string[]) => {
     setLoadingLawyers(true)
-    const legalArea = specialties[0] || 'General'
+    // Ensure we have a valid specialty, default to Derecho Civil if empty
+    const legalArea = (specialties && specialties.length > 0 && specialties[0]) ? specialties[0] : 'Derecho Civil'
     setModalLegalArea(legalArea)
 
     try {
@@ -177,16 +196,16 @@ function ChatContent() {
   const handleSubmitMessage = async (messageText: string) => {
     if (!messageText.trim() || isLoading) return
 
-    // Si es el primer mensaje, agregar disclaimer inicial
+    // Check if user can ask questions (unregistered users have a limit)
+    if (!isAuthenticated && !canAskQuestion) {
+      setAuthModalReason('limit')
+      setShowAuthModal(true)
+      return
+    }
+
+    // Si es el primer mensaje, marcar que el chat ha comenzado
     if (!chatStarted) {
       setChatStarted(true)
-      const disclaimerMessage: Message = {
-        id: 'disclaimer-initial',
-        role: 'assistant',
-        content: '👋 ¡Hola! Soy LEIA, tu asistente de orientacion legal.\n\n⚖️ **Aviso importante:** Mis respuestas son orientativas y no constituyen asesoria legal profesional. Para tu caso especifico, te recomiendo consultar con un abogado.\n\nCuentame, ¿en que puedo ayudarte?',
-        timestamp: new Date()
-      }
-      setMessages([disclaimerMessage])
     }
 
     const userMessage: Message = {
@@ -196,6 +215,7 @@ function ChatContent() {
       timestamp: new Date()
     }
 
+    // El mensaje del usuario aparece primero
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
@@ -231,6 +251,11 @@ function ChatContent() {
       }
 
       setMessages(prev => [...prev, assistantMessage])
+
+      // Increment question count for unregistered users
+      if (!isAuthenticated) {
+        incrementQuestionCount()
+      }
     } catch (error) {
       console.error('Error:', error)
       const errorMessage: Message = {
@@ -267,6 +292,21 @@ function ChatContent() {
         lawyers={modalLawyers}
         legalArea={modalLegalArea}
         onTransferComplete={handleTransferComplete}
+        isAuthenticated={isAuthenticated}
+        onRequireAuth={() => {
+          setAuthModalReason('lawyer')
+          setShowAuthModal(true)
+        }}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => setShowAuthModal(false)}
+        login={login}
+        register={register}
+        reason={authModalReason}
       />
 
       {/* Glass Header */}
@@ -276,10 +316,48 @@ function ChatContent() {
             <LeiaLogo size="md" />
           </Link>
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full glass-button">
-              <Sparkles className="h-4 w-4 text-pacific-500" />
-              <span className="text-sm font-medium text-slate-600">Asistente con IA</span>
-            </div>
+            {/* Question counter for unregistered users */}
+            {!isAuthenticated && !authLoading && (
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-pacific-50 border border-pacific-200">
+                <span className="text-sm text-pacific-700">
+                  {remainingQuestions > 0
+                    ? `${remainingQuestions} consulta${remainingQuestions !== 1 ? 's' : ''} como invitado`
+                    : 'Regístrate para continuar'}
+                </span>
+              </div>
+            )}
+
+            {/* User info for authenticated users */}
+            {isAuthenticated && user && (
+              <div className="hidden sm:flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-button">
+                  <User className="h-4 w-4 text-pacific-500" />
+                  <span className="text-sm font-medium text-slate-600">{user.full_name || user.email}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="text-xs text-slate-500 hover:text-slate-700 underline"
+                >
+                  Cerrar sesion
+                </button>
+              </div>
+            )}
+
+            {/* Login button for unregistered users */}
+            {!isAuthenticated && !authLoading && (
+              <Button
+                variant="glass"
+                size="sm"
+                onClick={() => {
+                  setAuthModalReason('limit')
+                  setShowAuthModal(true)
+                }}
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Ingresar
+              </Button>
+            )}
+
             <Button variant="glass" size="sm" asChild>
               <Link href="/">
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -315,6 +393,53 @@ function ChatContent() {
                 >
                   Cuentame tu situacion. Te oriento gratis y, si lo necesitas, te conecto con un abogado verificado.
                 </p>
+
+                {/* Remaining questions indicator for unregistered users */}
+                {!isAuthenticated && !authLoading && (
+                  <div
+                    className={cn(
+                      "max-w-md mx-auto p-3 rounded-xl mb-4 animate-fade-in opacity-0",
+                      remainingQuestions <= 2
+                        ? "bg-amber-50/80 border border-amber-200"
+                        : "bg-pacific-50/80 border border-pacific-200"
+                    )}
+                    style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}
+                  >
+                    <p className={cn(
+                      "text-sm text-center",
+                      remainingQuestions <= 2 ? "text-amber-700" : "text-pacific-700"
+                    )}>
+                      {remainingQuestions > 0 ? (
+                        <>
+                          Tienes <strong>{remainingQuestions}</strong> consulta{remainingQuestions !== 1 ? 's' : ''} como invitado.{' '}
+                          <button
+                            onClick={() => {
+                              setAuthModalReason('limit')
+                              setShowAuthModal(true)
+                            }}
+                            className="text-pacific-600 font-medium underline hover:text-pacific-700"
+                          >
+                            Crea tu cuenta
+                          </button>
+                          {' '}para consultas sin límite.
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              setAuthModalReason('limit')
+                              setShowAuthModal(true)
+                            }}
+                            className="text-pacific-600 font-medium underline hover:text-pacific-700"
+                          >
+                            Crea tu cuenta
+                          </button>
+                          {' '}para seguir consultando con LEIA.
+                        </>
+                      )}
+                    </p>
+                  </div>
+                )}
 
                 {/* Disclaimer visible */}
                 <div
@@ -375,16 +500,14 @@ function ChatContent() {
                           <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
                         </div>
 
-                        {/* Lawyer Button - Siempre visible después de respuesta */}
-                        {message.role === 'assistant' && !message.content.includes('Tu caso ha sido enviado') && (
+                        {/* Lawyer Button - Solo cuando showLawyerButton es true */}
+                        {message.role === 'assistant' && message.showLawyerButton && !message.content.includes('Tu caso ha sido enviado') && (
                           <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-pacific-50 to-white border border-pacific-100">
                             <p className="text-sm text-slate-600 mb-3">
-                              {message.showLawyerButton
-                                ? "📋 Tu situacion requiere asesoria profesional"
-                                : "💡 ¿Necesitas hablar con un abogado?"}
+                              📋 Tu situacion puede requerir asesoria profesional
                             </p>
                             <button
-                              onClick={() => handleOpenLawyerModal(message.suggestedSpecialties || ['General'])}
+                              onClick={() => handleOpenLawyerModal(message.suggestedSpecialties?.length ? message.suggestedSpecialties : ['Derecho Civil'])}
                               disabled={loadingLawyers}
                               className="w-full p-3 bg-gradient-to-r from-pacific-500 to-pacific-600 hover:from-pacific-600 hover:to-pacific-700 text-white rounded-xl shadow-lg shadow-pacific-500/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-3"
                             >
@@ -396,7 +519,9 @@ function ChatContent() {
                               ) : (
                                 <>
                                   <Scale className="h-5 w-5" />
-                                  <span className="font-medium">Ver abogados disponibles</span>
+                                  <span className="font-medium">
+                                    Ver abogados de {message.suggestedSpecialties?.[0] || 'tu caso'}
+                                  </span>
                                   <ChevronRight className="h-5 w-5" />
                                 </>
                               )}

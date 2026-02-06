@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Inter, Lora, Dancing_Script, Playfair_Display, Montserrat, Space_Grotesk, Sora, Great_Vibes, Pacifico } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
@@ -15,6 +15,55 @@ const lora = Lora({
   variable: "--font-lora",
   display: "swap",
   weight: ["400", "500", "600", "700"],
+});
+
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  variable: "--font-dancing",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-sora",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  variable: "--font-great-vibes",
+  display: "swap",
+  weight: "400",
+});
+
+const pacifico = Pacifico({
+  subsets: ["latin"],
+  variable: "--font-pacifico",
+  display: "swap",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -36,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${lora.variable}`}>
+    <html lang="es" className={`${inter.variable} ${lora.variable} ${dancingScript.variable} ${playfair.variable} ${montserrat.variable} ${spaceGrotesk.variable} ${sora.variable} ${greatVibes.variable} ${pacifico.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased">
         <Providers>
           {children}

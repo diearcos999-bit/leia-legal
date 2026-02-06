@@ -23,6 +23,8 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(255), nullable=True)
+    rut = Column(String(12), unique=True, index=True, nullable=True)  # RUT chileno (ej: 12345678-9)
+    phone = Column(String(20), nullable=True)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     role = Column(String(50), default="user")  # user, lawyer, admin

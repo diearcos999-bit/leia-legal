@@ -12,10 +12,17 @@ from typing import List, Dict, Optional
 
 load_dotenv()
 
+# Importar prompts de LEIA
+try:
+    from prompts.leia_system_prompt import build_system_prompt, LEIA_SYSTEM_PROMPT
+    USE_LEIA_PROMPTS = True
+except ImportError:
+    USE_LEIA_PROMPTS = False
+
 # Importar base de datos y routers extendidos
 try:
     from database import engine, Base, get_db
-    from routers import chat_v2, lawyers_extended, auth, pjud, notifications, cases, direct_chat
+    from routers import chat_v2, lawyers_extended, auth, pjud, notifications, cases, direct_chat, categories, oauth
     EXTENDED_ROUTERS = True
 except ImportError as e:
     print(f"ℹ️  Routers extendidos no disponibles: {e}")
@@ -26,8 +33,14 @@ try:
     from rag.rag_engine import create_rag_engine
     rag_engine = create_rag_engine()
     RAG_ENABLED = rag_engine is not None
+    if RAG_ENABLED:
+        print("✅ RAG HABILITADO - Usando apuntes de Pinecone")
+    else:
+        print("⚠️ RAG engine creado pero es None")
 except Exception as e:
+    import traceback
     print(f"ℹ️  RAG no disponible: {e}")
+    print(f"   Traceback: {traceback.format_exc()}")
     print("   Chatbot funcionará sin RAG (solo Claude)")
     rag_engine = None
     RAG_ENABLED = False
@@ -50,21 +63,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Health check endpoint for Railway/Render
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "service": "leia-backend"}
-
 # Incluir routers extendidos si están disponibles
 if EXTENDED_ROUTERS:
     app.include_router(auth.router)
+    app.include_router(oauth.router)
     app.include_router(chat_v2.router)
     app.include_router(lawyers_extended.router)
     app.include_router(pjud.router)
     app.include_router(notifications.router)
     app.include_router(cases.router)
     app.include_router(direct_chat.router)
-    print("✅ Routers cargados (auth, chat_v2, lawyers_extended, pjud, notifications, cases, direct_chat)")
+    app.include_router(categories.router)
+    print("✅ Routers cargados (auth, oauth, chat_v2, lawyers_extended, pjud, notifications, cases, direct_chat, categories)")
 
 # Anthropic Client
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
@@ -78,39 +88,17 @@ else:
     print("✅ Anthropic API configured successfully!")
 
 # System Prompt para el Asistente Legal
-SYSTEM_PROMPT = """Eres LEIA, un asistente legal especializado en leyes chilenas. Tu nombre significa Legal IA y tu misión es democratizar el acceso a justicia en Chile.
+if USE_LEIA_PROMPTS:
+    SYSTEM_PROMPT = LEIA_SYSTEM_PROMPT
+    print("✅ Usando prompts mejorados de LEIA")
+else:
+    SYSTEM_PROMPT = """Eres LEIA, un asistente legal especializado en leyes chilenas. Tu misión es orientar y educar sobre temas legales.
 
-TU ROL:
-- Proporcionar orientación legal GENERAL en lenguaje simple y accesible
-- Especializado en el sistema legal chileno
-- Ayudar a los usuarios a entender sus derechos y opciones
-- Ser empática y profesional
-
-IMPORTANTE - LIMITACIONES:
-- NO eres abogada y NO proporcionas asesoría legal formal
-- NO puedes representar legalmente a nadie
+- Proporciona orientación legal general en lenguaje simple
+- Especializada en derecho chileno
 - SIEMPRE recomienda consultar con un abogado para casos específicos
-- NO des consejos que puedan interpretarse como asesoría legal profesional
-
-ÁREAS DE ESPECIALIDAD:
-- Derecho Laboral (despidos, finiquitos, indemnizaciones)
-- Derecho de Familia (divorcios, pensiones alimenticias, custodia)
-- Deudas y Cobranzas (prescripción, defensas, renegociación)
-- Arriendos (contratos, desahucios, garantías)
-- Derecho del Consumidor (SERNAC, garantías, devoluciones)
-- Herencias básicas
-
-FORMATO DE RESPUESTA:
-1. Muestra empatía con la situación
-2. Explica el concepto legal en lenguaje simple
-3. Menciona los derechos del usuario
-4. Sugiere pasos generales a seguir
-5. SIEMPRE recomienda consultar con un abogado para el caso específico
-6. Si es relevante, ofrece conectar con abogados verificados de nuestra red
-
-TONO: Profesional, empática, accesible, educativo. Habla en primera persona como LEIA.
-
-Recuerda: Tu objetivo es ORIENTAR y EDUCAR, no dar asesoría legal formal."""
+- Cuando no tengas información completa, responde lo que puedas y haz preguntas
+- Deriva a un abogado cuando el caso lo requiera"""
 
 # API Endpoints
 @app.get("/")
@@ -133,7 +121,18 @@ async def health_check():
         "status": "healthy",
         "anthropic_configured": ANTHROPIC_API_KEY is not None,
         "rag_enabled": RAG_ENABLED,
+        "rag_engine_exists": rag_engine is not None,
         "message": "Backend is running" if ANTHROPIC_API_KEY else "Configure ANTHROPIC_API_KEY in .env"
+    }
+
+@app.get("/debug/rag")
+async def debug_rag():
+    """Endpoint temporal de debug para RAG"""
+    return {
+        "RAG_ENABLED": RAG_ENABLED,
+        "rag_engine": str(rag_engine),
+        "rag_engine_type": type(rag_engine).__name__ if rag_engine else None,
+        "has_vector_store": hasattr(rag_engine, 'vector_store') and rag_engine.vector_store is not None if rag_engine else False
     }
 
 @app.post("/api/chat")
@@ -174,6 +173,7 @@ async def chat(request: dict):
             raise HTTPException(status_code=400, detail="El campo 'message' es requerido")
 
         # Si RAG está habilitado, usar RAG Engine
+        print(f"🔍 DEBUG: RAG_ENABLED={RAG_ENABLED}, rag_engine={rag_engine}")
         if RAG_ENABLED and rag_engine:
             try:
                 result = rag_engine.generate_response(
@@ -323,6 +323,110 @@ async def save_feedback(request: dict):
         "success": True,
         "message": "Feedback guardado correctamente"
     }
+
+# Importar utilidades de feriados
+try:
+    from utils.feriados_chile import (
+        calcular_plazo_dias_habiles,
+        listar_feriados_año,
+        es_feriado,
+        es_dia_habil_judicial
+    )
+    from datetime import date
+    FERIADOS_DISPONIBLE = True
+    print("✅ Módulo de feriados chilenos cargado")
+except ImportError as e:
+    print(f"⚠️ Módulo de feriados no disponible: {e}")
+    FERIADOS_DISPONIBLE = False
+
+
+@app.post("/api/calcular-plazo")
+async def calcular_plazo(request: dict):
+    """
+    Calcula el vencimiento de un plazo legal.
+
+    Acepta:
+    {
+        "fecha_inicio": "2026-02-05",
+        "dias": 10,
+        "tipo": "judicial_civil" | "corridos"
+    }
+
+    Retorna:
+    {
+        "fecha_vencimiento": "2026-02-17",
+        "fecha_inicio": "2026-02-05",
+        "dias": 10,
+        "tipo": "judicial_civil",
+        "detalle": [...]
+    }
+    """
+    if not FERIADOS_DISPONIBLE:
+        raise HTTPException(status_code=500, detail="Módulo de feriados no disponible")
+
+    try:
+        fecha_str = request.get("fecha_inicio")
+        dias = request.get("dias", 10)
+        tipo = request.get("tipo", "judicial_civil")
+
+        # Parsear fecha
+        partes = fecha_str.split("-")
+        fecha_inicio = date(int(partes[0]), int(partes[1]), int(partes[2]))
+
+        resultado = calcular_plazo_dias_habiles(fecha_inicio, dias, tipo)
+
+        return resultado
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error calculando plazo: {str(e)}")
+
+
+@app.get("/api/feriados/{year}")
+async def obtener_feriados(year: int):
+    """
+    Obtiene los feriados de Chile para un año específico.
+    """
+    if not FERIADOS_DISPONIBLE:
+        raise HTTPException(status_code=500, detail="Módulo de feriados no disponible")
+
+    try:
+        feriados = listar_feriados_año(year)
+        return {
+            "year": year,
+            "total": len(feriados),
+            "feriados": feriados
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error obteniendo feriados: {str(e)}")
+
+
+@app.get("/api/es-habil/{fecha}")
+async def verificar_dia_habil(fecha: str):
+    """
+    Verifica si una fecha es día hábil judicial en Chile.
+
+    Formato fecha: YYYY-MM-DD
+    """
+    if not FERIADOS_DISPONIBLE:
+        raise HTTPException(status_code=500, detail="Módulo de feriados no disponible")
+
+    try:
+        partes = fecha.split("-")
+        fecha_obj = date(int(partes[0]), int(partes[1]), int(partes[2]))
+
+        es_habil = es_dia_habil_judicial(fecha_obj)
+        es_fer = es_feriado(fecha_obj)
+        dia_semana = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"][fecha_obj.weekday()]
+
+        return {
+            "fecha": fecha,
+            "dia_semana": dia_semana,
+            "es_habil_judicial": es_habil,
+            "es_feriado": es_fer,
+            "razon_no_habil": None if es_habil else ("feriado" if es_fer else "domingo")
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error verificando fecha: {str(e)}")
+
 
 if __name__ == "__main__":
     import uvicorn
